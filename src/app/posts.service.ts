@@ -38,4 +38,18 @@ export class PostsService {
             })
         );
     }
+
+    deletePosts() {
+        return this.http.delete('https://ng-complete-guide-36ecd.firebaseio.com/posts.json');
+        // this.fetchPosts().subscribe(posts => {
+        //     posts.forEach(post => {
+        //         const apiUrl = `https://ng-complete-guide-36ecd.firebaseio.com/posts/${post.id}.json`;
+        //         console.log(`removing ${apiUrl}`);
+        //         this.http.delete(apiUrl)
+        //             .subscribe(result => {
+        //                 // console.log(`removed: ${result}`);
+        //             });
+        //     });
+        // });
+    }
 }
