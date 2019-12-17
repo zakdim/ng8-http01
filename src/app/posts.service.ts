@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/common/http';
+import { map, catchError, tap } from 'rxjs/operators';
 
 import { Post } from './post.model';
 import { Subject, throwError } from 'rxjs';
@@ -19,7 +19,10 @@ export class PostsService {
         this.http
             .post<{ name: string }>(
                 'https://ng-complete-guide-36ecd.firebaseio.com/posts.json',
-                postData
+                postData,
+                {
+                    observe: 'response'
+                }
             )
             .subscribe(
                 responseData => {
@@ -61,16 +64,21 @@ export class PostsService {
     }
 
     deletePosts() {
-        return this.http.delete('https://ng-complete-guide-36ecd.firebaseio.com/posts.json');
-        // this.fetchPosts().subscribe(posts => {
-        //     posts.forEach(post => {
-        //         const apiUrl = `https://ng-complete-guide-36ecd.firebaseio.com/posts/${post.id}.json`;
-        //         console.log(`removing ${apiUrl}`);
-        //         this.http.delete(apiUrl)
-        //             .subscribe(result => {
-        //                 // console.log(`removed: ${result}`);
-        //             });
-        //     });
-        // });
+        return this.http.delete(
+            'https://ng-complete-guide-36ecd.firebaseio.com/posts.json',
+            {
+                observe: 'events'
+            }
+        ).pipe(
+            tap(event => {
+                console.log(event);
+                if (event.type === HttpEventType.Sent) {
+                    // ...
+                }
+                if (event.type === HttpEventType.Response) {
+                    console.log(event.body);
+                }
+            })
+        );
     }
 }
